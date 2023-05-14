@@ -32,7 +32,7 @@ class Read:
             if not new_buffer:
                 return None
             buffer += new_buffer
-            count -= len(new_buffer)
+            count = max(count - len(new_buffer), 0)
         return buffer
 
     def __del__(self):
