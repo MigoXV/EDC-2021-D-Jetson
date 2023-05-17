@@ -7,7 +7,9 @@ from search import *
 from algorithm import *
 # from usart import Usart
 from uartGUI import JetsonGUI as Usart
+from PIL import Image, ImageTk
 import random
+import tkinter as tk
 
 image_from_A = None
 image_from_B = None
@@ -28,9 +30,14 @@ L = 0
 theta = 0
 t = 0
 
-ip_A = "192.168.24.202"
-ip_B = "192.168.24.203"
+# ip_A = "192.168.43.120"
+# ip_B = "192.168.43.92"
 
+ip_A = "127.0.0.1"
+ip_B = "127.0.0.1"
+
+def GUI_thread(thread_name):
+    usart = Usart()
 
 def read_image_A_thread(thread_name, reader):
     global image_from_A, time_from_A, t
@@ -51,6 +58,24 @@ def read_image_B_thread(thread_name, reader):
         t = 1.0 / ((cv2.getTickCount() - temp_t) / cv2.getTickFrequency())
         # print("B", int(t))
 
+def GUI_thread(thread_name):
+    global task_id
+    usart = Usart()
+    task_id = usart.get_result()
+    if task_id != 0 and is_complete_flag and is_cal_flag:
+        if task_id == 4:
+            to_zero_flag = True
+        print(task_id)
+        print("start")
+        is_first = False
+        is_cal_flag = False
+        is_complete_flag = False
+        search_A.reset()
+        search_B.reset()
+        search_A.start_measure()
+        search_B.start_measure()
+    else:
+        task_id = 0
 
 def start_thread():
     reader_A = Read()
@@ -61,16 +86,18 @@ def start_thread():
     reader_B.set_read_config(ip_B, 8001)
     _thread.start_new_thread(read_image_B_thread, ("1", reader_B))
     print("connect node B success")
+    _thread.start_new_thread(GUI_thread, ("1"))
+    print("GUI start success")
 
 
 if __name__ == '__main__':
     start_thread()
-    cv2.namedWindow("MainWindow", cv2.WINDOW_AUTOSIZE)
-    cv2.moveWindow("MainWindow", 0, 0)
-    cv2.setWindowProperty("MainWindow", cv2.WND_PROP_TOPMOST, 1)
+    # cv2.namedWindow("MainWindow", cv2.WINDOW_AUTOSIZE)
+    # cv2.moveWindow("MainWindow", 0, 0)
+    # cv2.setWindowProperty("MainWindow", cv2.WND_PROP_TOPMOST, 1)
     image2 = get_button_image()
     image3 = get_ellipse()
-    usart = Usart()
+    # usart = Usart()
     record_image_A = None
     record_image_B = None
     search_A = Search("1")
@@ -80,26 +107,28 @@ if __name__ == '__main__':
     show_deltaB = 0
     while True:
         try:
-            if not check_flag:
-                usart.check_write()
-                if usart.check_read():
-                    check_flag = True
-            if check_flag:
-                task_id = usart.get_result()
-                if task_id != 0 and is_complete_flag and is_cal_flag:
-                    if task_id == 4:
-                        to_zero_flag = True
-                    print(task_id)
-                    print("start")
-                    is_first = False
-                    is_cal_flag = False
-                    is_complete_flag = False
-                    search_A.reset()
-                    search_B.reset()
-                    search_A.start_measure()
-                    search_B.start_measure()
-                else:
-                    task_id = 0
+            # # 自检
+            # if not check_flag:
+            #     usart.check_write()
+            #     if usart.check_read():
+            #         check_flag = True
+            # # 自检完成，开始运行
+            # if check_flag:
+                # task_id = usart.get_result()
+                # if task_id != 0 and is_complete_flag and is_cal_flag:
+                #     if task_id == 4:
+                #         to_zero_flag = True
+                #     print(task_id)
+                #     print("start")
+                #     is_first = False
+                #     is_cal_flag = False
+                #     is_complete_flag = False
+                #     search_A.reset()
+                #     search_B.reset()
+                #     search_A.start_measure()
+                #     search_B.start_measure()
+                # else:
+                #     task_id = 0
             if image_from_A is not None and image_from_B is not None:
                 if image_from_A is not record_image_A:
                     record_image_A = image_from_A
@@ -170,8 +199,17 @@ if __name__ == '__main__':
                     cv2.putText(image, text, (1070, 640 + 600), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
                     text = "deltaX_A: " + str(show_deltaA)
                     cv2.putText(image, text, (1070, 610 + 600), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1)
-                cv2.imshow("MainWindow", image)
-                cv2.waitKey(1)
+                
+                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                pil_image = Image.fromarray(image_rgb)
+                tk_image = ImageTk.PhotoImage(pil_image)
+                # cv2.imshow("MainWindow", image)
+                # cv2.waitKey(1)
+                
+
+                tk.canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
+                usart.canvas.image = tk_image
+                
         except Exception as e:
             print(e)
             is_complete_flag = True
