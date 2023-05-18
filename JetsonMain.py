@@ -7,7 +7,7 @@ from some_image import *
 # from search import *
 import search
 from algorithm import *
-from uartGUI import JetsonGUI as Usart
+from tkGUI import JetsonGUI as tkGUI
 from PIL import Image, ImageTk
 import random
 import tkinter as tk
@@ -198,7 +198,7 @@ if __name__ == '__main__':
     # 启动A、B线程
     start_thread()
     # tkinter必须放在主线程里
-    usart=Usart()
+    usart=tkGUI()
     usart.window.mainloop()
     # GUI_thread(usart)
 
