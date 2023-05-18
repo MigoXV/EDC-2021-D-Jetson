@@ -96,7 +96,7 @@ class Search:
         cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
         c = None
         for c_ in cnts:
-            if 1500 > cv2.contourArea(c_) > 10:
+            if  15000 > cv2.contourArea(c_) > 2000:
                 bounding_box = cv2.boundingRect(c_)
                 if bounding_box[0] < 5 and bounding_box[1] < 5:
                     continue

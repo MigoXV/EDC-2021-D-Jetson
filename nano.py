@@ -107,28 +107,6 @@ if __name__ == '__main__':
     show_deltaB = 0
     while True:
         try:
-            # # 自检
-            # if not check_flag:
-            #     usart.check_write()
-            #     if usart.check_read():
-            #         check_flag = True
-            # # 自检完成，开始运行
-            # if check_flag:
-                # task_id = usart.get_result()
-                # if task_id != 0 and is_complete_flag and is_cal_flag:
-                #     if task_id == 4:
-                #         to_zero_flag = True
-                #     print(task_id)
-                #     print("start")
-                #     is_first = False
-                #     is_cal_flag = False
-                #     is_complete_flag = False
-                #     search_A.reset()
-                #     search_B.reset()
-                #     search_A.start_measure()
-                #     search_B.start_measure()
-                # else:
-                #     task_id = 0
             if image_from_A is not None and image_from_B is not None:
                 if image_from_A is not record_image_A:
                     record_image_A = image_from_A

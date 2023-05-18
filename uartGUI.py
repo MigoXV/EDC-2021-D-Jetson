@@ -10,7 +10,7 @@
 from tkinter import * 
 from PIL import Image, ImageTk
 import cv2
-
+# import JetsonMain 
 
 
 
@@ -41,7 +41,7 @@ class JetsonGUI:
         canvas.pack()
         
         # 窗口创建完毕，准备开始主循环
-        self.window.mainloop()
+        
 
     def check_write(self):
         # self.checkState='check OK'
